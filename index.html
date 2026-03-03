@@ -132,15 +132,12 @@ section,#cinematiques>.inner,#lore-banner{max-width:1100px;margin:0 auto;padding
 .cine-card.has-video{cursor:pointer;border-color:rgba(255,183,0,0.18);}
 .cine-card.has-video:hover{border-color:rgba(255,183,0,0.55);box-shadow:0 0 32px rgba(255,183,0,0.07);}
 .cine-card.has-video .cine-bg{background:linear-gradient(135deg,rgba(255,183,0,0.04),transparent);}
-.cine-card.has-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.88;z-index:0;}
+.cine-card.has-video .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.88;z-index:0;pointer-events:none;}
 .cine-card.has-video .cine-lbl{color:rgba(255,255,255,0.78);position:absolute;bottom:0;left:0;right:0;padding:12px 14px 14px;background:linear-gradient(to top,rgba(0,0,0,0.88),transparent);text-align:left;}
 .cine-sublbl{font-size:8px;opacity:0.5;letter-spacing:1.5px;display:block;margin-top:3px;}
-/* Play/Pause */
-.cine-ctrl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:46px;height:46px;border-radius:50%;border:1px solid rgba(255,183,0,0.55);background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;font-size:15px;z-index:5;transition:opacity 0.25s,transform 0.2s,background 0.2s;opacity:0;backdrop-filter:blur(4px);cursor:pointer;}
-.cine-card.has-video:hover .cine-ctrl{opacity:1;}
-.cine-ctrl:hover{background:rgba(255,183,0,0.15);transform:translate(-50%,-50%) scale(1.08);}
-.cine-ctrl.playing{opacity:0.15;}
-.cine-ctrl.playing:hover{opacity:1;}
+/* Play button overlay */
+.cine-ctrl{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:52px;height:52px;border-radius:50%;border:1px solid rgba(255,183,0,0.6);background:rgba(0,0,0,0.65);display:flex;align-items:center;justify-content:center;font-size:18px;z-index:5;transition:opacity 0.25s,transform 0.2s,background 0.2s;opacity:0.55;backdrop-filter:blur(4px);cursor:pointer;}
+.cine-card.has-video:hover .cine-ctrl{opacity:1;transform:translate(-50%,-50%) scale(1.1);}
 /* Badge */
 .cine-badge{position:absolute;top:10px;right:10px;font-size:7px;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(255,183,0,0.25);color:var(--amber);background:rgba(0,0,0,0.5);z-index:6;backdrop-filter:blur(4px);}
 /* Vision */
@@ -148,11 +145,17 @@ section,#cinematiques>.inner,#lore-banner{max-width:1100px;margin:0 auto;padding
 .cine-card.is-vision:hover{border-color:rgba(138,43,226,0.55);box-shadow:0 0 32px rgba(138,43,226,0.08);}
 .cine-card.is-vision .cine-badge{border-color:rgba(138,43,226,0.35);color:#c084f5;}
 .cine-card.is-vision .cine-bg{background:linear-gradient(135deg,rgba(138,43,226,0.05),transparent);}
-.cine-card.is-vision .cine-ctrl{border-color:rgba(192,132,245,0.55);}
-.cine-card.is-vision .cine-ctrl:hover{background:rgba(138,43,226,0.18);}
+.cine-card.is-vision .cine-ctrl{border-color:rgba(192,132,245,0.6);}
 /* DS */
 .cine-card.is-ds{border-color:rgba(255,183,0,0.1);}
 .cine-card.is-ds .cine-badge{border-color:rgba(255,183,0,0.2);color:rgba(255,183,0,0.7);}
+/* MODAL */
+#video-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.96);align-items:center;justify-content:center;flex-direction:column;}
+#video-modal.open{display:flex;}
+#video-modal video{max-width:92vw;max-height:85vh;width:auto;height:auto;outline:none;}
+#modal-close{position:absolute;top:20px;right:26px;font-size:22px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:'Share Tech Mono',monospace;letter-spacing:2px;transition:color 0.2s;}
+#modal-close:hover{color:#fff;}
+#modal-title{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.25);white-space:nowrap;}
 /* Note + disclaimer */
 .cine-note{font-size:10px;letter-spacing:2px;color:rgba(0,229,255,0.16);margin-top:10px;margin-bottom:50px;text-align:center;}
 .cine-disclaimer{margin-top:10px;border:1px solid rgba(138,43,226,0.18);background:rgba(138,43,226,0.03);padding:20px 26px;position:relative;overflow:hidden;}
@@ -318,43 +321,34 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
       <div class="cine-group-title">▸ &nbsp;SÉQUENCES PRINCIPALES — OPÉRATIONS MOSSEBA</div>
       <div class="cine-grid">
 
-        <!-- BE.mp4 — vidéo mariage Jenny -->
-        <div class="cine-card has-video" onclick="toggleVideo(this)">
+        <div class="cine-card has-video" onclick="openVideo('BE.mp4','TRANSMISSION — BE')">
           <div class="cine-bg"></div>
-          <video src="BE.mp4" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">MARIAGE — JENNY</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">TRANSMISSION — BE<span class="cine-sublbl">SIGNAL INTERCEPTÉ AU MARIAGE</span></div>
         </div>
 
-        <!-- beck.webm — prise d'otage Jenny -->
-        <div class="cine-card has-video" onclick="toggleVideo(this)">
+        <div class="cine-card has-video" onclick="openVideo('beck.webm','PRISE D\'OTAGE — JENNY')">
           <div class="cine-bg"></div>
-          <video src="beck.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">OPÉRATION — BECK</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">PRISE D'OTAGE — JENNY<span class="cine-sublbl">MARIAGE — EXTRACTION FORCÉE</span></div>
         </div>
 
-        <!-- kidnap.webm — kidnapping Tyler par Lily -->
-        <div class="cine-card has-video" onclick="toggleVideo(this)">
+        <div class="cine-card has-video" onclick="openVideo('kidnap.webm','KIDNAPPING — TYLER')">
           <div class="cine-bg"></div>
-          <video src="kidnap.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">ENLÈVEMENT — TYLER</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">KIDNAPPING — TYLER<span class="cine-sublbl">SUJET : LILY — IDENTITÉ NON CONFIRMÉE</span></div>
         </div>
 
-        <!-- messs.webm — hack des puces / grange -->
-        <div class="cine-card has-video" onclick="toggleVideo(this)">
+        <div class="cine-card has-video" onclick="openVideo('messs.webm','HACK — BIO-PUCES')">
           <div class="cine-bg"></div>
-          <video src="messs.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">COMPROMISSION — PUCES</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">HACK — BIO-PUCES<span class="cine-sublbl">SUITE MISSION GRANGE — CONTAMINATION</span></div>
         </div>
 
-        <!-- À VENIR -->
         <div class="cine-card"><div class="cine-bg"></div><div class="cine-badge">À VENIR</div><div class="cine-lock">▶</div><div class="cine-lbl">SÉQUENCE CLASSIFIÉE<span class="cine-sublbl" style="opacity:.3">EN PRODUCTION</span></div><div class="cine-prog"></div></div>
 
       </div>
@@ -365,25 +359,20 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
       <div class="cine-group-title g-vision">◈ &nbsp;VISIONS — CONTENUS DISSOCIÉS / HORS OPÉRATIONS</div>
       <div class="cine-grid">
 
-        <!-- breche.mp4 — agent 07 autre simulation -->
-        <div class="cine-card has-video is-vision" onclick="toggleVideo(this)">
+        <div class="cine-card has-video is-vision" onclick="openVideo('breche.mp4','BRÈCHE — SIMULATION')">
           <div class="cine-bg"></div>
-          <video src="breche.mp4" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">VISION — AGENT 07</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">BRÈCHE — SIMULATION<span class="cine-sublbl">PRÉSENCE : AGENT 07 — ORIGINE INCONNUE</span></div>
         </div>
 
-        <!-- siennashepardflashback.webm — lore Sienna, hors Mosseba -->
-        <div class="cine-card has-video is-vision" onclick="toggleVideo(this)">
+        <div class="cine-card has-video is-vision" onclick="openVideo('siennashepardflashback.webm','SIENNA SHEPARD — ARCHIVES')">
           <div class="cine-bg"></div>
-          <video src="siennashepardflashback.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">FLASHBACK — SIENNA</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">SIENNA SHEPARD — ARCHIVES<span class="cine-sublbl">LORE EXTERNE — NON LIÉ À MOSSEBA</span></div>
         </div>
 
-        <!-- À VENIR -->
         <div class="cine-card is-vision"><div class="cine-bg"></div><div class="cine-badge">À VENIR</div><div class="cine-lock">◈</div><div class="cine-lbl">VISION CLASSIFIÉE<span class="cine-sublbl" style="opacity:.3">EN PRODUCTION</span></div><div class="cine-prog"></div></div>
 
       </div>
@@ -394,30 +383,24 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
       <div class="cine-group-title g-ds">⬡ &nbsp;DOSSIERS SONORES — MISSION ZELIA / BRÉSIL</div>
       <div class="cine-grid ds-grid">
 
-        <!-- headset1.webm -->
-        <div class="cine-card has-video is-ds" onclick="toggleVideo(this)">
+        <div class="cine-card has-video is-ds" onclick="openVideo('headset1.webm','HEADSET — SÉQUENCE 01')">
           <div class="cine-bg"></div>
-          <video src="headset1.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">DS — 01</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">HEADSET — SÉQUENCE 01<span class="cine-sublbl">ZELIA — TERRAIN BRÉSIL</span></div>
         </div>
 
-        <!-- headset2.webm -->
-        <div class="cine-card has-video is-ds" onclick="toggleVideo(this)">
+        <div class="cine-card has-video is-ds" onclick="openVideo('headset2.webm','HEADSET — SÉQUENCE 02')">
           <div class="cine-bg"></div>
-          <video src="headset2.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">DS — 02</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">HEADSET — SÉQUENCE 02<span class="cine-sublbl">ZELIA — TERRAIN BRÉSIL</span></div>
         </div>
 
-        <!-- headsetaudio.webm -->
-        <div class="cine-card has-video is-ds" onclick="toggleVideo(this)">
+        <div class="cine-card has-video is-ds" onclick="openVideo('headsetaudio.webm','HEADSET — AUDIO')">
           <div class="cine-bg"></div>
-          <video src="headsetaudio.webm" muted loop playsinline preload="metadata"></video>
           <div class="cine-badge">DS — AUDIO</div>
-          <div class="cine-ctrl" title="Play / Pause">▶</div>
+          <div class="cine-ctrl">▶</div>
           <div class="cine-lbl">HEADSET — AUDIO<span class="cine-sublbl">ZELIA — EXTRAIT SONORE</span></div>
         </div>
 
@@ -438,6 +421,13 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
   </div>
 </div>
 
+<!-- VIDEO MODAL -->
+<div id="video-modal">
+  <span id="modal-close" onclick="closeVideo()">✕ FERMER</span>
+  <video id="modal-video" controls playsinline></video>
+  <div id="modal-title"></div>
+</div>
+
 <footer>
   <div class="f-logo">MOSSEBA // ARCHIVES CLASSIFIÉES</div>
   <div class="f-line">MESS//IA — PROJET EN COURS — 2035 — CERBERUS SURVEILLANCE ACTIVE</div>
@@ -451,20 +441,23 @@ document.addEventListener('mousemove',e=>{document.getElementById('cx').style.to
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.08});
 document.querySelectorAll('.module-card,.cine-card,.lore-box').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.8s ease, transform 0.8s ease, border-color 0.3s, box-shadow 0.3s, background 0.3s';obs.observe(el);});
 
-function toggleVideo(card){
-  const video=card.querySelector('video');
-  const ctrl=card.querySelector('.cine-ctrl');
-  if(!video)return;
-  if(video.paused){
-    video.play();
-    ctrl.textContent='⏸';
-    ctrl.classList.add('playing');
-  } else {
-    video.pause();
-    ctrl.textContent='▶';
-    ctrl.classList.remove('playing');
-  }
+const modal=document.getElementById('video-modal');
+const modalVideo=document.getElementById('modal-video');
+const modalTitle=document.getElementById('modal-title');
+
+function openVideo(src,title){
+  modalVideo.src=src;
+  modalTitle.textContent=title;
+  modal.classList.add('open');
+  modalVideo.play();
 }
+function closeVideo(){
+  modal.classList.remove('open');
+  modalVideo.pause();
+  modalVideo.src='';
+}
+modal.addEventListener('click',function(e){if(e.target===modal)closeVideo();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideo();});
 </script>
 </body>
 </html>
