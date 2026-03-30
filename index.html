@@ -149,13 +149,101 @@ section,#cinematiques>.inner,#lore-banner{max-width:1100px;margin:0 auto;padding
 /* DS */
 .cine-card.is-ds{border-color:rgba(255,183,0,0.1);}
 .cine-card.is-ds .cine-badge{border-color:rgba(255,183,0,0.2);color:rgba(255,183,0,0.7);}
-/* MODAL */
-#video-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.96);align-items:center;justify-content:center;flex-direction:column;}
+/* ===== MOSSEBA PLAYER MODAL ===== */
+#video-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.97);align-items:center;justify-content:center;flex-direction:column;}
 #video-modal.open{display:flex;}
-#video-modal video{max-width:92vw;max-height:85vh;width:auto;height:auto;outline:none;}
-#modal-close{position:absolute;top:20px;right:26px;font-size:22px;color:rgba(255,255,255,0.5);cursor:pointer;font-family:'Share Tech Mono',monospace;letter-spacing:2px;transition:color 0.2s;}
-#modal-close:hover{color:#fff;}
-#modal-title{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);font-family:'Orbitron',monospace;font-size:9px;letter-spacing:4px;color:rgba(255,255,255,0.25);white-space:nowrap;}
+#modal-close{position:absolute;top:16px;right:22px;font-size:10px;color:rgba(255,255,255,0.4);cursor:pointer;font-family:'Orbitron',monospace;letter-spacing:3px;transition:color 0.2s;z-index:10010;padding:8px 12px;border:1px solid rgba(255,255,255,0.08);background:rgba(0,0,0,0.5);}
+#modal-close:hover{color:#fff;border-color:rgba(0,229,255,0.4);}
+#modal-title{position:absolute;top:18px;left:22px;font-family:'Orbitron',monospace;font-size:8px;letter-spacing:4px;color:rgba(0,229,255,0.35);white-space:nowrap;z-index:10010;display:flex;align-items:center;gap:10px;}
+#modal-title::before{content:'▸ LECTURE';color:rgba(255,26,46,0.6);font-size:7px;letter-spacing:2px;animation:blink 1.5s infinite;}
+
+/* Player container */
+.mosseba-player{position:relative;width:92vw;max-width:1200px;aspect-ratio:16/9;max-height:82vh;background:#000;border:1px solid rgba(0,229,255,0.12);box-shadow:0 0 80px rgba(0,0,0,0.9),0 0 40px rgba(0,229,255,0.04);overflow:hidden;}
+.mosseba-player video{width:100%;height:100%;object-fit:contain;display:block;}
+.mosseba-player::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:5;border:1px solid rgba(0,229,255,0.05);box-shadow:inset 0 0 60px rgba(0,0,0,0.4);}
+
+/* HUD corners */
+.player-corner{position:absolute;width:16px;height:16px;z-index:6;pointer-events:none;}
+.player-corner.tl{top:0;left:0;border-top:1px solid rgba(0,229,255,0.35);border-left:1px solid rgba(0,229,255,0.35);}
+.player-corner.tr{top:0;right:0;border-top:1px solid rgba(0,229,255,0.35);border-right:1px solid rgba(0,229,255,0.35);}
+.player-corner.bl{bottom:0;left:0;border-bottom:1px solid rgba(0,229,255,0.35);border-left:1px solid rgba(0,229,255,0.35);}
+.player-corner.br{bottom:0;right:0;border-bottom:1px solid rgba(0,229,255,0.35);border-right:1px solid rgba(0,229,255,0.35);}
+
+/* Subtitle display */
+.sub-display{position:absolute;bottom:70px;left:50%;transform:translateX(-50%);z-index:10;pointer-events:none;text-align:center;width:85%;max-width:800px;transition:opacity 0.2s;}
+.sub-display span{display:inline;font-family:'Rajdhani',sans-serif;font-size:clamp(14px,2.2vw,22px);font-weight:500;color:#fff;background:rgba(0,0,0,0.7);padding:5px 14px;line-height:1.8;letter-spacing:0.8px;text-shadow:0 0 10px rgba(0,229,255,0.3);border-left:2px solid rgba(0,229,255,0.5);box-decoration-break:clone;-webkit-box-decoration-break:clone;}
+.sub-display.hidden{opacity:0;}
+
+/* Controls bar */
+.player-controls{position:absolute;bottom:0;left:0;right:0;z-index:8;background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.6) 60%,transparent 100%);padding:30px 16px 12px;display:flex;flex-direction:column;gap:8px;opacity:0;transition:opacity 0.3s ease;}
+.mosseba-player:hover .player-controls,.mosseba-player.show-controls .player-controls{opacity:1;}
+
+/* Progress bar */
+.progress-wrap{position:relative;width:100%;height:4px;background:rgba(255,255,255,0.08);cursor:pointer;border-radius:0;transition:height 0.15s;}
+.progress-wrap:hover{height:7px;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--cyan),rgba(0,229,255,0.7));position:relative;width:0%;transition:none;pointer-events:none;}
+.progress-fill::after{content:'';position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:3px;height:14px;background:var(--cyan);box-shadow:0 0 8px rgba(0,229,255,0.6);opacity:0;transition:opacity 0.15s;}
+.progress-wrap:hover .progress-fill::after{opacity:1;}
+.progress-buffer{position:absolute;top:0;left:0;height:100%;background:rgba(255,255,255,0.06);pointer-events:none;}
+/* Sub cues on progress bar */
+.progress-cue{position:absolute;top:0;height:100%;width:2px;background:rgba(255,183,0,0.4);pointer-events:none;z-index:2;}
+
+/* Timestamp tooltip on hover */
+.progress-tooltip{position:absolute;bottom:14px;transform:translateX(-50%);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--cyan);background:rgba(0,0,0,0.85);padding:2px 8px;border:1px solid rgba(0,229,255,0.2);display:none;white-space:nowrap;pointer-events:none;z-index:3;}
+.progress-wrap:hover .progress-tooltip{display:block;}
+
+/* Bottom controls row */
+.ctrl-row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.ctrl-left,.ctrl-right{display:flex;align-items:center;gap:10px;}
+.ctrl-btn{background:none;border:none;color:rgba(255,255,255,0.55);font-family:'Share Tech Mono',monospace;font-size:14px;cursor:pointer;padding:4px 6px;transition:color 0.2s,text-shadow 0.2s;display:flex;align-items:center;justify-content:center;min-width:28px;}
+.ctrl-btn:hover{color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,0.4);}
+.ctrl-btn.active{color:var(--cyan);}
+.ctrl-time{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:1px;margin-left:4px;}
+.ctrl-time .sep{margin:0 3px;opacity:0.3;}
+
+/* Volume slider */
+.vol-wrap{display:flex;align-items:center;gap:6px;}
+.vol-slider{-webkit-appearance:none;appearance:none;width:60px;height:3px;background:rgba(255,255,255,0.12);outline:none;cursor:pointer;border-radius:0;}
+.vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:8px;height:14px;background:var(--cyan);border:none;cursor:pointer;box-shadow:0 0 6px rgba(0,229,255,0.4);}
+.vol-slider::-moz-range-thumb{width:8px;height:14px;background:var(--cyan);border:none;cursor:pointer;}
+
+/* Subtitle toggle */
+.sub-toggle{position:relative;font-size:10px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:0;}
+.sub-toggle.active{border-color:rgba(0,229,255,0.4);color:var(--cyan);background:rgba(0,229,255,0.06);}
+.sub-toggle .sub-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);display:inline-block;margin-right:5px;}
+.sub-toggle.active .sub-dot{background:var(--cyan);box-shadow:0 0 6px rgba(0,229,255,0.5);}
+
+/* Speed selector */
+.speed-btn{font-size:9px;letter-spacing:1px;}
+
+/* Fullscreen */
+.fs-btn{font-size:16px;}
+
+/* Thumbnail overlay on cards */
+.cine-card .cine-thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;z-index:0;transition:opacity 0.4s;pointer-events:none;}
+.cine-card.has-video .cine-thumb{opacity:0.6;}
+.cine-card.has-video:hover .cine-thumb{opacity:0.8;}
+.cine-card.has-video .cine-bg{background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,rgba(0,0,0,0.2) 50%,rgba(0,0,0,0.1) 100%);z-index:1;}
+
+/* Big play overlay */
+.big-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:7;width:64px;height:64px;border-radius:50%;border:1.5px solid rgba(0,229,255,0.5);background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s,border-color 0.2s,background 0.2s;backdrop-filter:blur(6px);}
+.big-play::after{content:'';width:0;height:0;border-style:solid;border-width:10px 0 10px 18px;border-color:transparent transparent transparent rgba(0,229,255,0.8);margin-left:4px;}
+.big-play:hover{transform:translate(-50%,-50%) scale(1.1);border-color:var(--cyan);background:rgba(0,229,255,0.1);}
+.mosseba-player.playing .big-play{opacity:0;pointer-events:none;transition:opacity 0.3s;}
+
+/* Loading spinner */
+.player-loading{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:6;display:none;}
+.player-loading.show{display:block;}
+.player-loading::after{content:'';display:block;width:36px;height:36px;border:2px solid transparent;border-top-color:var(--cyan);border-radius:50%;animation:rspin 0.8s linear infinite;}
+
+/* Responsive */
+@media(max-width:700px){
+  .mosseba-player{width:98vw;max-height:70vh;}
+  .sub-display{bottom:60px;width:92%;}
+  .sub-display span{font-size:13px;padding:3px 10px;}
+  .vol-slider{width:40px;}
+  .ctrl-time{font-size:9px;}
+}
 /* Note + disclaimer */
 .cine-note{font-size:10px;letter-spacing:2px;color:rgba(0,229,255,0.16);margin-top:10px;margin-bottom:50px;text-align:center;}
 .cine-disclaimer{margin-top:10px;border:1px solid rgba(138,43,226,0.18);background:rgba(138,43,226,0.03);padding:20px 26px;position:relative;overflow:hidden;}
@@ -421,11 +509,53 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
   </div>
 </div>
 
-<!-- VIDEO MODAL -->
+<!-- MOSSEBA CUSTOM VIDEO PLAYER -->
 <div id="video-modal">
+  <div id="modal-title"><span></span></div>
   <span id="modal-close" onclick="closeVideo()">✕ FERMER</span>
-  <video id="modal-video" controls playsinline></video>
-  <div id="modal-title"></div>
+
+  <div class="mosseba-player" id="mossebaPlayer">
+    <div class="player-corner tl"></div>
+    <div class="player-corner tr"></div>
+    <div class="player-corner bl"></div>
+    <div class="player-corner br"></div>
+
+    <video id="modal-video" playsinline preload="metadata"></video>
+
+    <div class="big-play" id="bigPlay" onclick="togglePlay()"></div>
+    <div class="player-loading" id="playerLoading"></div>
+
+    <!-- Subtitles display -->
+    <div class="sub-display" id="subDisplay"><span id="subText"></span></div>
+
+    <!-- Controls -->
+    <div class="player-controls">
+      <!-- Progress bar -->
+      <div class="progress-wrap" id="progressWrap">
+        <div class="progress-buffer" id="progressBuffer"></div>
+        <div class="progress-fill" id="progressFill"></div>
+        <div class="progress-tooltip" id="progressTooltip">00:00</div>
+      </div>
+      <!-- Buttons -->
+      <div class="ctrl-row">
+        <div class="ctrl-left">
+          <button class="ctrl-btn" id="btnPlay" onclick="togglePlay()" title="Play/Pause">▶</button>
+          <button class="ctrl-btn" id="btnBack" onclick="skipTime(-10)" title="-10s">⟲</button>
+          <button class="ctrl-btn" id="btnFwd" onclick="skipTime(10)" title="+10s">⟳</button>
+          <div class="vol-wrap">
+            <button class="ctrl-btn" id="btnVol" onclick="toggleMute()" title="Volume">🔊</button>
+            <input type="range" class="vol-slider" id="volSlider" min="0" max="1" step="0.05" value="1">
+          </div>
+          <span class="ctrl-time"><span id="timeCur">00:00</span><span class="sep">/</span><span id="timeDur">00:00</span></span>
+        </div>
+        <div class="ctrl-right">
+          <button class="ctrl-btn sub-toggle" id="btnSub" onclick="toggleSubs()" title="Sous-titres"><span class="sub-dot"></span>SUB</button>
+          <button class="ctrl-btn speed-btn" id="btnSpeed" onclick="cycleSpeed()" title="Vitesse">1x</button>
+          <button class="ctrl-btn fs-btn" id="btnFs" onclick="toggleFullscreen()" title="Plein écran">⛶</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <footer>
@@ -435,29 +565,436 @@ footer{border-top:1px solid rgba(0,229,255,0.06);padding:32px 24px;display:flex;
 </footer>
 
 <script>
+/* ===== CLOCK ===== */
 function updateClock(){const n=new Date();document.getElementById('clock').textContent=n.toTimeString().split(' ')[0];}
 setInterval(updateClock,1000);updateClock();
+
+/* ===== CURSOR ===== */
 document.addEventListener('mousemove',e=>{document.getElementById('cx').style.top=e.clientY+'px';document.getElementById('cy').style.left=e.clientX+'px';});
+
+/* ===== SCROLL REVEAL ===== */
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.08});
 document.querySelectorAll('.module-card,.cine-card,.lore-box').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.8s ease, transform 0.8s ease, border-color 0.3s, box-shadow 0.3s, background 0.3s';obs.observe(el);});
 
-const modal=document.getElementById('video-modal');
-const modalVideo=document.getElementById('modal-video');
-const modalTitle=document.getElementById('modal-title');
+/* ===================================================================
+   MOSSEBA CUSTOM VIDEO PLAYER — FULL SYSTEM
+   =================================================================== */
 
-function openVideo(src,title){
-  modalVideo.src=src;
-  modalTitle.textContent=title;
+const modal     = document.getElementById('video-modal');
+const player    = document.getElementById('mossebaPlayer');
+const vid       = document.getElementById('modal-video');
+const modalTitle= document.querySelector('#modal-title span');
+const bigPlay   = document.getElementById('bigPlay');
+const loading   = document.getElementById('playerLoading');
+
+// Controls
+const btnPlay   = document.getElementById('btnPlay');
+const btnVol    = document.getElementById('btnVol');
+const volSlider = document.getElementById('volSlider');
+const timeCur   = document.getElementById('timeCur');
+const timeDur   = document.getElementById('timeDur');
+const btnSub    = document.getElementById('btnSub');
+const btnSpeed  = document.getElementById('btnSpeed');
+const progressWrap = document.getElementById('progressWrap');
+const progressFill = document.getElementById('progressFill');
+const progressBuffer = document.getElementById('progressBuffer');
+const progressTooltip = document.getElementById('progressTooltip');
+const subDisplay = document.getElementById('subDisplay');
+const subText    = document.getElementById('subText');
+
+/* ===== SUBTITLE SYSTEM ===== */
+/*
+  Sous-titres au format WebVTT (.vtt)
+  
+  Pour chaque vidéo, tu peux créer un fichier .vtt à côté du fichier vidéo.
+  Nom attendu : même nom que la vidéo + ".vtt"
+  Exemple : "BE.mp4" → "BE.mp4.vtt"
+  
+  Format du fichier .vtt :
+  ──────────────────────
+  WEBVTT
+  
+  00:00:01.000 --> 00:00:04.500
+  Première ligne de sous-titre ici.
+  
+  00:00:05.000 --> 00:00:08.200
+  Deuxième ligne...
+  ──────────────────────
+  
+  Tu peux aussi utiliser le panneau d'édition intégré (bouton ✎ à côté de SUB)
+  pour écrire les sous-titres en live pendant la lecture.
+*/
+
+let subtitles = [];       // parsed cues: [{start, end, text}]
+let subsEnabled = true;
+let currentCueIdx = -1;
+let currentVideoSrc = '';
+
+// Parse VTT text into cue array
+function parseVTT(text) {
+  const cues = [];
+  const blocks = text.replace(/\r\n/g, '\n').split(/\n\n+/);
+  for (const block of blocks) {
+    const lines = block.trim().split('\n');
+    for (let i = 0; i < lines.length; i++) {
+      const match = lines[i].match(/(\d{2}:\d{2}[:\.][\d.]+)\s*-->\s*(\d{2}:\d{2}[:\.][\d.]+)/);
+      if (match) {
+        const textLines = lines.slice(i + 1).join('\n').trim();
+        if (textLines) {
+          cues.push({
+            start: parseVTTTime(match[1]),
+            end:   parseVTTTime(match[2]),
+            text:  textLines.replace(/<[^>]+>/g, '') // strip html tags
+          });
+        }
+        break;
+      }
+    }
+  }
+  return cues;
+}
+
+function parseVTTTime(str) {
+  const parts = str.replace(',', '.').split(/[:.]/);
+  if (parts.length === 4) {
+    return (+parts[0]) * 3600 + (+parts[1]) * 60 + (+parts[2]) + (+parts[3]) / 1000;
+  } else if (parts.length === 3) {
+    return (+parts[0]) * 60 + (+parts[1]) + (+parts[2]) / 1000;
+  }
+  return 0;
+}
+
+// Try loading .vtt for a given video src
+async function loadSubtitles(videoSrc) {
+  subtitles = [];
+  currentCueIdx = -1;
+  subText.textContent = '';
+  
+  // Remove existing cue markers
+  progressWrap.querySelectorAll('.progress-cue').forEach(c => c.remove());
+  
+  const vttUrl = videoSrc + '.vtt';
+  try {
+    const resp = await fetch(vttUrl);
+    if (resp.ok) {
+      const txt = await resp.text();
+      subtitles = parseVTT(txt);
+      if (subtitles.length > 0) {
+        btnSub.classList.add('active');
+        subsEnabled = true;
+        console.log(`[MOSSEBA] ${subtitles.length} sous-titres chargés`);
+      }
+    } else {
+      console.log('[MOSSEBA] Pas de fichier sous-titres trouvé (' + vttUrl + ')');
+    }
+  } catch (e) {
+    console.log('[MOSSEBA] Sous-titres non disponibles');
+  }
+}
+
+// Render subtitle cue markers on progress bar
+function renderSubCues() {
+  progressWrap.querySelectorAll('.progress-cue').forEach(c => c.remove());
+  if (!vid.duration || subtitles.length === 0) return;
+  subtitles.forEach(cue => {
+    const pct = (cue.start / vid.duration) * 100;
+    const el = document.createElement('div');
+    el.className = 'progress-cue';
+    el.style.left = pct + '%';
+    progressWrap.appendChild(el);
+  });
+}
+
+// Update subtitle display based on current time
+function updateSubtitles(time) {
+  if (!subsEnabled || subtitles.length === 0) {
+    subDisplay.classList.add('hidden');
+    return;
+  }
+  let found = -1;
+  for (let i = 0; i < subtitles.length; i++) {
+    if (time >= subtitles[i].start && time <= subtitles[i].end) {
+      found = i;
+      break;
+    }
+  }
+  if (found !== currentCueIdx) {
+    currentCueIdx = found;
+    if (found >= 0) {
+      subText.textContent = subtitles[found].text;
+      subDisplay.classList.remove('hidden');
+    } else {
+      subDisplay.classList.add('hidden');
+    }
+  }
+}
+
+function toggleSubs() {
+  subsEnabled = !subsEnabled;
+  btnSub.classList.toggle('active', subsEnabled);
+  if (!subsEnabled) {
+    subDisplay.classList.add('hidden');
+  }
+}
+
+/* ===== FORMAT TIME ===== */
+function fmt(s) {
+  if (isNaN(s) || !isFinite(s)) return '00:00';
+  const m = Math.floor(s / 60);
+  const sec = Math.floor(s % 60);
+  return String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+}
+
+/* ===== PLAYER CONTROLS ===== */
+function togglePlay() {
+  if (vid.paused) {
+    vid.play();
+  } else {
+    vid.pause();
+  }
+}
+
+vid.addEventListener('play', () => {
+  player.classList.add('playing');
+  btnPlay.textContent = '⏸';
+});
+vid.addEventListener('pause', () => {
+  player.classList.remove('playing');
+  btnPlay.textContent = '▶';
+});
+vid.addEventListener('waiting', () => loading.classList.add('show'));
+vid.addEventListener('canplay', () => loading.classList.remove('show'));
+vid.addEventListener('loadedmetadata', () => {
+  timeDur.textContent = fmt(vid.duration);
+  renderSubCues();
+});
+
+// Time update → progress + subtitles
+vid.addEventListener('timeupdate', () => {
+  if (!vid.duration) return;
+  const pct = (vid.currentTime / vid.duration) * 100;
+  progressFill.style.width = pct + '%';
+  timeCur.textContent = fmt(vid.currentTime);
+  updateSubtitles(vid.currentTime);
+});
+
+// Buffer display
+vid.addEventListener('progress', () => {
+  if (vid.buffered.length > 0 && vid.duration) {
+    const buffEnd = vid.buffered.end(vid.buffered.length - 1);
+    progressBuffer.style.width = (buffEnd / vid.duration * 100) + '%';
+  }
+});
+
+// Click on progress bar → seek
+let isSeeking = false;
+function seekFromEvent(e) {
+  const rect = progressWrap.getBoundingClientRect();
+  const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  if (vid.duration) {
+    vid.currentTime = pct * vid.duration;
+    progressFill.style.width = (pct * 100) + '%';
+  }
+}
+progressWrap.addEventListener('mousedown', e => { isSeeking = true; seekFromEvent(e); });
+document.addEventListener('mousemove', e => {
+  if (isSeeking) seekFromEvent(e);
+  // Tooltip
+  const rect = progressWrap.getBoundingClientRect();
+  if (e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top - 20 && e.clientY <= rect.bottom + 10) {
+    const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    progressTooltip.textContent = fmt(pct * (vid.duration || 0));
+    progressTooltip.style.left = (pct * 100) + '%';
+  }
+});
+document.addEventListener('mouseup', () => { isSeeking = false; });
+
+// Skip
+function skipTime(s) {
+  if (vid.duration) vid.currentTime = Math.max(0, Math.min(vid.duration, vid.currentTime + s));
+}
+
+// Volume
+volSlider.addEventListener('input', () => {
+  vid.volume = volSlider.value;
+  vid.muted = false;
+  updateVolIcon();
+});
+function toggleMute() {
+  vid.muted = !vid.muted;
+  updateVolIcon();
+}
+function updateVolIcon() {
+  if (vid.muted || vid.volume === 0) btnVol.textContent = '🔇';
+  else if (vid.volume < 0.5) btnVol.textContent = '🔉';
+  else btnVol.textContent = '🔊';
+}
+
+// Speed
+const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+let speedIdx = 2;
+function cycleSpeed() {
+  speedIdx = (speedIdx + 1) % speeds.length;
+  vid.playbackRate = speeds[speedIdx];
+  btnSpeed.textContent = speeds[speedIdx] + 'x';
+}
+
+// Fullscreen
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    player.requestFullscreen().catch(() => {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// Double-click to fullscreen
+player.addEventListener('dblclick', (e) => {
+  if (e.target.closest('.player-controls')) return;
+  toggleFullscreen();
+});
+
+// Click video to play/pause
+vid.addEventListener('click', togglePlay);
+
+// Show controls on mouse activity
+let ctrlTimeout;
+player.addEventListener('mousemove', () => {
+  player.classList.add('show-controls');
+  clearTimeout(ctrlTimeout);
+  ctrlTimeout = setTimeout(() => player.classList.remove('show-controls'), 3000);
+});
+
+/* ===== KEYBOARD SHORTCUTS ===== */
+document.addEventListener('keydown', e => {
+  if (!modal.classList.contains('open')) return;
+  switch (e.key) {
+    case 'Escape': closeVideo(); break;
+    case ' ': e.preventDefault(); togglePlay(); break;
+    case 'ArrowLeft': skipTime(-5); break;
+    case 'ArrowRight': skipTime(5); break;
+    case 'ArrowUp': e.preventDefault(); vid.volume = Math.min(1, vid.volume + 0.1); volSlider.value = vid.volume; updateVolIcon(); break;
+    case 'ArrowDown': e.preventDefault(); vid.volume = Math.max(0, vid.volume - 0.1); volSlider.value = vid.volume; updateVolIcon(); break;
+    case 'f': case 'F': toggleFullscreen(); break;
+    case 's': case 'S': toggleSubs(); break;
+    case 'm': case 'M': toggleMute(); break;
+  }
+});
+
+/* ===== OPEN / CLOSE VIDEO ===== */
+function openVideo(src, title) {
+  currentVideoSrc = src;
+  vid.src = src;
+  modalTitle.textContent = title;
   modal.classList.add('open');
-  modalVideo.play();
+  document.body.style.overflow = 'hidden';
+  
+  // Reset
+  progressFill.style.width = '0%';
+  timeCur.textContent = '00:00';
+  timeDur.textContent = '00:00';
+  btnPlay.textContent = '▶';
+  player.classList.remove('playing');
+  subText.textContent = '';
+  subDisplay.classList.add('hidden');
+  speedIdx = 2;
+  vid.playbackRate = 1;
+  btnSpeed.textContent = '1x';
+  
+  // Load subtitles
+  loadSubtitles(src);
+  
+  vid.play().catch(() => {});
 }
-function closeVideo(){
+
+function closeVideo() {
   modal.classList.remove('open');
-  modalVideo.pause();
-  modalVideo.src='';
+  vid.pause();
+  vid.src = '';
+  subtitles = [];
+  currentCueIdx = -1;
+  document.body.style.overflow = '';
+  if (document.fullscreenElement) document.exitFullscreen();
 }
-modal.addEventListener('click',function(e){if(e.target===modal)closeVideo();});
-document.addEventListener('keydown',function(e){if(e.key==='Escape')closeVideo();});
+
+modal.addEventListener('click', function(e) { if (e.target === modal) closeVideo(); });
+
+/* ===== THUMBNAIL GENERATION ===== */
+/*
+  Pour ajouter des thumbnails aux cartes, deux options :
+  
+  1. IMAGES STATIQUES (recommandé) : place une image .jpg/.png à côté de ta vidéo
+     avec le même nom + ".thumb.jpg" (ex: "BE.mp4.thumb.jpg")
+     → Elles seront chargées automatiquement.
+  
+  2. AUTO-GÉNÉRATION : le système ci-dessous essaie de capturer une frame
+     de la vidéo pour générer la miniature. Ça fonctionne uniquement si
+     les vidéos sont hébergées sur le même domaine (pas de CORS).
+*/
+
+function loadThumbnails() {
+  document.querySelectorAll('.cine-card.has-video').forEach(card => {
+    const onclickAttr = card.getAttribute('onclick');
+    if (!onclickAttr) return;
+    
+    const match = onclickAttr.match(/openVideo\(['"]([^'"]+)['"]/);
+    if (!match) return;
+    const videoSrc = match[1];
+    
+    // Try static thumbnail first
+    const thumbUrl = videoSrc + '.thumb.jpg';
+    const img = document.createElement('img');
+    img.className = 'cine-thumb';
+    img.loading = 'lazy';
+    img.alt = '';
+    
+    img.onload = function() {
+      card.prepend(img);
+    };
+    
+    img.onerror = function() {
+      // Fallback: try to generate from video
+      generateThumb(videoSrc, card);
+    };
+    
+    img.src = thumbUrl;
+  });
+}
+
+function generateThumb(videoSrc, card) {
+  const tempVid = document.createElement('video');
+  tempVid.crossOrigin = 'anonymous';
+  tempVid.muted = true;
+  tempVid.preload = 'metadata';
+  
+  tempVid.addEventListener('loadeddata', () => {
+    tempVid.currentTime = Math.min(2, tempVid.duration * 0.15);
+  });
+  
+  tempVid.addEventListener('seeked', () => {
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 480;
+      canvas.height = 270;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(tempVid, 0, 0, 480, 270);
+      
+      const img = document.createElement('img');
+      img.className = 'cine-thumb';
+      img.src = canvas.toDataURL('image/jpeg', 0.7);
+      img.alt = '';
+      card.prepend(img);
+    } catch (e) {
+      // CORS or other error — no thumbnail
+    }
+    tempVid.src = '';
+  });
+  
+  tempVid.src = videoSrc;
+}
+
+// Initialize thumbnails on load
+document.addEventListener('DOMContentLoaded', loadThumbnails);
 </script>
 </body>
 </html>
