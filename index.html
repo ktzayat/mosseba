@@ -208,7 +208,7 @@ section,#cinematiques>.inner,#lore-banner{max-width:1100px;margin:0 auto;padding
 .vol-slider::-moz-range-thumb{width:8px;height:14px;background:var(--cyan);border:none;cursor:pointer;}
 
 /* Subtitle toggle */
-.sub-toggle{position:relative;font-size:10px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:0;}
+.sub-toggle{position:relative;font-size:10px;letter-spacing:1px;padding:3px 8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.03);border-radius:0;display:none;}
 .sub-toggle.active{border-color:rgba(0,229,255,0.4);color:var(--cyan);background:rgba(0,229,255,0.06);}
 .sub-toggle .sub-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.2);display:inline-block;margin-right:5px;}
 .sub-toggle.active .sub-dot{background:var(--cyan);box-shadow:0 0 6px rgba(0,229,255,0.5);}
@@ -681,6 +681,7 @@ async function loadSubtitles(videoSrc) {
       subtitles = parseVTT(txt);
       if (subtitles.length > 0) {
         btnSub.classList.add('active');
+        btnSub.style.display = 'inline-flex';
         subsEnabled = true;
         console.log(`[MOSSEBA] ${subtitles.length} sous-titres chargés`);
       }
@@ -897,6 +898,8 @@ function openVideo(src, title) {
   player.classList.remove('playing');
   subText.textContent = '';
   subDisplay.classList.add('hidden');
+  btnSub.style.display = 'none';
+  btnSub.classList.remove('active');
   speedIdx = 2;
   vid.playbackRate = 1;
   btnSpeed.textContent = '1x';
